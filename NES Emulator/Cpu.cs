@@ -257,9 +257,14 @@ namespace NES_Emulator
                 //case 0x2b:
                 //	Console.WriteLine($"");
                 //	break;
-                //case 0x2c:
-                //	Console.WriteLine($"");
-                //	break;
+                case 0x2c:
+                    tmpPC = AM_Absolute();
+                    tmpByte = MEM[tmpPC];
+                    R.SR.N = (tmpByte & 0x80) != 0;
+                    R.SR.V = (tmpByte & 0x40) != 0;
+                    R.SR.Z = (R.A & tmpByte) == 0;
+                    Console.WriteLine($"BIT ${tmpPC.ToHex()}");
+                    break;
                 //case 0x2d:
                 //	Console.WriteLine($"");
                 //	break;
@@ -414,9 +419,10 @@ namespace NES_Emulator
                 //case 0x5f:
                 //	Console.WriteLine($"");
                 //	break;
-                //case 0x60:
-                //	Console.WriteLine($"");
-                //	break;
+                case 0x60:
+                    R.PC = (ushort)((PopStack()<<8) + PopStack());
+                    Console.WriteLine($"RTS");
+                    return true;
                 //case 0x61:
                 //	Console.WriteLine($"");
                 //	break;
@@ -539,15 +545,20 @@ namespace NES_Emulator
                     MEM[tmpPC] = R.A;
                     Console.WriteLine($"STA ${tmpPC.ToHex()}");
                     break;
-                //case 0x86:
-                //	Console.WriteLine($"");
-                //	break;
+                case 0x86:
+                    tmpPC = AM_Zeropage();
+                    MEM[tmpPC] = R.X;
+                    Console.WriteLine($"STX ${tmpPC.ToHex()}");
+                    break;
                 //case 0x87:
                 //	Console.WriteLine($"");
                 //	break;
-                //case 0x88:
-                //	Console.WriteLine($"");
-                //	break;
+                case 0x88:
+                    R.Y--;
+                    R.SR.N = (sbyte)R.Y < 0;
+                    R.SR.Z = R.Y == 0;
+                    Console.WriteLine($"DEY");
+                    break;
                 //case 0x89:
                 //	Console.WriteLine($"");
                 //	break;
@@ -785,9 +796,12 @@ namespace NES_Emulator
                 //case 0xc9:
                 //	Console.WriteLine($"");
                 //	break;
-                //case 0xca:
-                //	Console.WriteLine($"");
-                //	break;
+                case 0xca:
+                    R.X--;
+                    R.SR.N = (sbyte)R.X < 0;
+                    R.SR.Z = R.X == 0;
+                    Console.WriteLine($"DEX");
+                    break;
                 //case 0xcb:
                 //	Console.WriteLine($"");
                 //	break;

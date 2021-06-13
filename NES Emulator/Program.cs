@@ -11,7 +11,7 @@ namespace NES_Emulator
             List<byte> PRG = new List<byte>();
             List<byte> CHR = new List<byte>();
 
-            LoadRom("Pac-Man.nes", PRG, CHR);
+            LoadRom("cpu_dummy_reads.nes", PRG, CHR);
 
             NES nes = new NES(PRG, CHR);            
             nes.Run();
