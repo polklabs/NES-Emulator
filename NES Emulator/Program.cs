@@ -11,7 +11,7 @@ namespace NES_Emulator
             List<byte> PRG = new List<byte>();
             List<byte> CHR = new List<byte>();
 
-            LoadRom("Super Mario Bros (E).nes", PRG, CHR);
+            LoadRom("Pac-Man.nes", PRG, CHR);
 
             NES nes = new NES(PRG, CHR);            
             nes.Run();

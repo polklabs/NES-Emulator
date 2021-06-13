@@ -47,6 +47,9 @@ namespace NES_Emulator
             byte[] memoryUnit = getMemoryUnit(address);
             ushort offset = getMemoryOffset(address);
 
+            while (address - offset > memoryUnit.Length)
+                offset += (ushort)memoryUnit.Length;
+
             if (address - offset >= memoryUnit.Length)
                 throw new Exception($"Address out of bounds: {address.ToString("X4")}");
 
