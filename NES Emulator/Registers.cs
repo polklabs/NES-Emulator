@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using ExtensionMethods;
 
 namespace NES_Emulator
 {
@@ -46,21 +48,28 @@ namespace NES_Emulator
             SP = 0xFA;
         }
 
-        public string SR_str
+        public byte SR_byte
         {
             get
             {                
-                BitArray a = new BitArray(new bool[] { SR.N, SR.V, SR.u, SR.B, SR.D, SR.I, SR.Z, SR.C });
+                BitArray a = new BitArray(new bool[] { SR.C, SR.Z, SR.I, SR.D, SR.B, SR.u, SR.V, SR.N });
                 byte[] b = new byte[1];
                 a.CopyTo(b, 0);
-                return b[0].ToString("X2");
+                return b[0];
             }
         }
 
-        public string PC_str { get { return PC.ToString("X4"); } }
-        public string A_str { get { return A.ToString("X2"); } }
-        public string X_str { get { return X.ToString("X2"); } }
-        public string Y_str { get { return Y.ToString("X2"); } }
-        public string SP_str { get { return SP.ToString("X2"); } }
+        public void PrintRegisterStates()
+        {
+            Console.WriteLine("");
+            Console.WriteLine($"PC: {PC.ToHex()}");
+            Console.WriteLine($"SR: {SR_byte.ToHex()} - {Convert.ToString(SR_byte, 2).PadLeft(8, '0')}");
+            Console.WriteLine($"A:  {A.ToHex()}");
+            Console.WriteLine($"X:  {X.ToHex()}");
+            Console.WriteLine($"Y:  {Y.ToHex()}");
+            Console.WriteLine($"SP: {SP.ToHex()}");
+        }
+
+        
     }
 }
