@@ -5,12 +5,12 @@ namespace NES_Emulator
 {
     class Memory
     {
-        private byte[] RAM = new byte[0x0800];
-        private byte[] PPU = new byte[0x0008];
-        private byte[] AIO = new byte[0x0018]; // APU & I/O
-        private byte[] AIF = new byte[0x0018]; // APU & I/O testing
-        private byte[] PRA = new byte[0x3FE0]; // Progam RAM
-        private byte[] PRG; // Program
+        private readonly byte[] RAM = new byte[0x0800];
+        private readonly byte[] PPU = new byte[0x0008];
+        private readonly byte[] AIO = new byte[0x0018]; // APU & I/O
+        private readonly byte[] AIF = new byte[0x0018]; // APU & I/O testing
+        private readonly byte[] PRA = new byte[0x3FE0]; // Progam RAM
+        private readonly byte[] PRG; // Program
 
         public Memory(List<byte> prg)
         {

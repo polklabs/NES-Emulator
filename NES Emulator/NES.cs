@@ -7,7 +7,7 @@ namespace NES_Emulator
     {
         readonly Memory MEM;
         readonly Registers R;
-        readonly Cpu CPU; 
+        readonly Cpu CPU_6502; 
 
         public NES(List<byte> prg, List<byte> chr)
         {
@@ -15,17 +15,17 @@ namespace NES_Emulator
             R = new Registers
             {
                 // Load the initial address into the program counter
-                PC = Convert.ToUInt16((MEM[0xFFFD] << 8) + MEM[0xFFFC])
+                PC = (ushort)(MEM[0xFFFC] + (MEM[0xFFFD] << 8))
             };
 
-            CPU = new Cpu(MEM, R);
+            CPU_6502 = new Cpu(MEM, R);
         }
 
         public void Run()
         {
             while(true)
             {
-                bool opResult = CPU.PerformOp();
+                bool opResult = CPU_6502.PerformOp();
                 if (!opResult) break;                
             }
 

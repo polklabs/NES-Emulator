@@ -8,12 +8,13 @@ namespace NES_Emulator
     {
         static void Main(string[] args)
         {
-            List<byte> PRG = new List<byte>();
-            List<byte> CHR = new List<byte>();
 
-            LoadRom("cpu_dummy_reads.nes", PRG, CHR);
+            List<byte> PRG = new();
+            List<byte> CHR = new();
 
-            NES nes = new NES(PRG, CHR);            
+            LoadRom("Super Mario Bros.nes", PRG, CHR);
+
+            NES nes = new NES(PRG, CHR);
             nes.Run();
 
             Console.ReadLine();
