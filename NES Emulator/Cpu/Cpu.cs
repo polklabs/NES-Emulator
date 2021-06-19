@@ -159,13 +159,13 @@ namespace NES_Emulator
         }
         #endregion
 
-        private void setFlagsNZ(byte a)
+        private void SetFlagsNZ(byte a)
         {
             R.SR.Z = a == 0;
             R.SR.N = (sbyte)a < 0;
         }
 
-        private byte add(byte a, byte b)
+        private byte Add(byte a, byte b)
         {
             int c = a + b;
             bool carry = (c > 0xFF);
@@ -181,14 +181,14 @@ namespace NES_Emulator
 
             byte r = (byte)c;
 
-            setFlagsNZ(r);
+            SetFlagsNZ(r);
             R.SR.C = carry;
             R.SR.V = overflow;
 
             return r;
         }
 
-        private byte subtract(byte a, byte b)
+        private byte Subtract(byte a, byte b)
         {
             int c = a - b;
             bool carry = (c & 0x100) == 0; // Because of signs we can't just compare to 0xFF so check the 9th bit for a 1
@@ -204,14 +204,14 @@ namespace NES_Emulator
 
             byte r = (byte)c;
 
-            setFlagsNZ(r);
+            SetFlagsNZ(r);
             R.SR.C = carry;
             R.SR.V = overflow;
 
             return r;
         }
 
-        private void compare(byte a, byte b)
+        private void Compare(byte a, byte b)
         {
             R.SR.N = ((byte)(a - b) & 0x80) != 0; // Negative flag
             R.SR.Z = a == b; // Zero flag
@@ -244,7 +244,7 @@ namespace NES_Emulator
                 case 0x79:
                 case 0x61:
                 case 0x71:
-                    R.A = add(R.A, tmpByte);                    
+                    R.A = Add(R.A, tmpByte);                    
                     break;
 
                 // AND
@@ -257,7 +257,7 @@ namespace NES_Emulator
                 case 0x21:
                 case 0x31:
                     R.A &= tmpByte;
-                    setFlagsNZ(R.A);
+                    SetFlagsNZ(R.A);
                     break;
 
                 // BCC
@@ -307,32 +307,32 @@ namespace NES_Emulator
                 case 0xD9:
                 case 0xC1:
                 case 0xD1:                    
-                    compare(R.A, tmpByte);
+                    Compare(R.A, tmpByte);
                     break;
 
                 // CPX
                 case 0xE0:
                 case 0xE4:
                 case 0xEC:
-                    compare(R.X, tmpByte);
+                    Compare(R.X, tmpByte);
                     break;
 
                 // CPY
                 case 0xC0:
                 case 0xC4:
                 case 0xCC:
-                    compare(R.Y, tmpByte);
+                    Compare(R.Y, tmpByte);
                     break;
 
 
                 // DEX
                 case 0xCA:
-                    setFlagsNZ(--R.X);
+                    SetFlagsNZ(--R.X);
                     break;
 
                 // DEY
                 case 0x88:
-                    setFlagsNZ(--R.Y);
+                    SetFlagsNZ(--R.Y);
                     break;
 
                 // INC
@@ -340,12 +340,12 @@ namespace NES_Emulator
                 case 0xF6:
                 case 0xEE:
                 case 0xFE:                    
-                    setFlagsNZ(++MEM[tmpAddr]);
+                    SetFlagsNZ(++MEM[tmpAddr]);
                     break;
 
                 // INY
                 case 0xC8:
-                    setFlagsNZ(++R.Y);
+                    SetFlagsNZ(++R.Y);
                     break;
 
                 // JMP
@@ -372,7 +372,7 @@ namespace NES_Emulator
                 case 0xA1:
                 case 0xB1:
                     R.A = tmpByte;
-                    setFlagsNZ(R.A);
+                    SetFlagsNZ(R.A);
                     break;
 
                 // LDX
@@ -382,7 +382,7 @@ namespace NES_Emulator
                 case 0xAE:
                 case 0xBE:
                     R.X = tmpByte;
-                    setFlagsNZ(R.X);                    
+                    SetFlagsNZ(R.X);                    
                     break;
 
                 // LDY
@@ -392,7 +392,7 @@ namespace NES_Emulator
                 case 0xAC:
                 case 0xBC:
                     R.Y = tmpByte;
-                    setFlagsNZ(R.Y);
+                    SetFlagsNZ(R.Y);
                     break;
 
                 // ORA
@@ -405,7 +405,7 @@ namespace NES_Emulator
                 case 0x01:
                 case 0x11:
                     R.A |= tmpByte;
-                    setFlagsNZ(R.A);
+                    SetFlagsNZ(R.A);
                     break;
 
                 // RTS
@@ -446,13 +446,13 @@ namespace NES_Emulator
                 // TAY
                 case 0xA8:
                     R.Y = R.A;
-                    setFlagsNZ(R.Y);
+                    SetFlagsNZ(R.Y);
                     break;
 
                 // TXA
                 case 0x8A:
                     R.A = R.X;
-                    setFlagsNZ(R.A);
+                    SetFlagsNZ(R.A);
                     break;
 
                 // TXS
@@ -463,7 +463,7 @@ namespace NES_Emulator
                 // TYA
                 case 0x98:
                     R.A = R.Y;
-                    setFlagsNZ(R.A);
+                    SetFlagsNZ(R.A);
                     break;
 
                 default:
