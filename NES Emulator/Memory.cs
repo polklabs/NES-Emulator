@@ -20,47 +20,47 @@ namespace NES_Emulator
 
         public byte this[ushort address]
         {
-            get => getMemory(address);
-            set => setMemory(address, value);
+            get => GetMemory(address);
+            set => SetMemory(address, value);
         }
 
         public byte this[int address]
         {
-            get => getMemory((ushort)address);
-            set => setMemory((ushort)address, value);
+            get => GetMemory((ushort)address);
+            set => SetMemory((ushort)address, value);
         }
 
-        public void setMemory(ushort address, byte val)
+        public void SetMemory(ushort address, byte val)
         {
-            byte[] memoryUnit = getMemoryUnit(address);
-            ushort offset = getMemoryOffset(address);
+            byte[] memoryUnit = GetMemoryUnit(address);
+            ushort offset = GetMemoryOffset(address);
 
             while (address - offset >= memoryUnit.Length)
                 offset += (ushort)memoryUnit.Length;
 
             if (address - offset >= memoryUnit.Length)
-                throw new Exception($"Address out of bounds: {address.ToString("X4")}");
+                throw new Exception($"Address out of bounds: {address:X4}");
 
             // TODO: Handle paging
             memoryUnit[address - offset] = val;
         }
 
-        public byte getMemory(ushort address)
+        public byte GetMemory(ushort address)
         {
-            byte[] memoryUnit = getMemoryUnit(address);
-            ushort offset = getMemoryOffset(address);
+            byte[] memoryUnit = GetMemoryUnit(address);
+            ushort offset = GetMemoryOffset(address);
 
             while (address - offset >= memoryUnit.Length)
                 offset += (ushort)memoryUnit.Length;
 
             if (address - offset >= memoryUnit.Length)
-                throw new Exception($"Address out of bounds: {address.ToString("X4")}");
+                throw new Exception($"Address out of bounds: {address:X4}");
 
             // TODO: Handle paging
             return memoryUnit[address - offset];
         }
 
-        private byte[] getMemoryUnit(ushort address)
+        private byte[] GetMemoryUnit(ushort address)
         {
             if (address < 0x2000) return RAM;
             if (address < 0x4000) return PPU;
@@ -68,10 +68,10 @@ namespace NES_Emulator
             if (address < 0x4020) return AIF;
             if (address < 0x8000) return PRA;
             if (address <= 0xFFFF) return PRG;
-            throw new Exception($"Unknown memory address: {address.ToString("X4")}");
+            throw new Exception($"Unknown memory address: {address:X4}");
         }
 
-        private ushort getMemoryOffset(ushort address)
+        private ushort GetMemoryOffset(ushort address)
         {
             if (address < 0x2000) return 0;
             if (address < 0x4000) return 0x2000;
@@ -79,7 +79,7 @@ namespace NES_Emulator
             if (address < 0x4020) return 0x4018;
             if (address < 0x8000) return 0x4020;
             if (address <= 0xFFFF) return 0x8000;
-            throw new Exception($"Unknown memory address: {address.ToString("X4")}");
+            throw new Exception($"Unknown memory address: {address:X4}");
         }
     }
 }

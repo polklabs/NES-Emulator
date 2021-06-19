@@ -154,7 +154,7 @@ namespace NES_Emulator
             byte code = MEM[R.PC];
             OpCode opCode = OpCode.GetOpCode(code);
 
-            Console.Write($"0x{R.PC.ToHex()} {code.ToHex()}: ");
+            Console.Write($"0x{R.PC:X4} {code:X2}: ");
 
             ushort tmpAddr = LoadAddress(opCode.Addressing);
             byte tmpByte = LoadData(opCode.Addressing, tmpAddr);
@@ -281,7 +281,6 @@ namespace NES_Emulator
                 case 0x4C:
                 case 0x6C:
                     R.PC = tmpAddr;
-                    //if (tmpAddr == 0x8057) return false; // Super Mario Bros inf loop
                     return true;
 
                 // JSR
@@ -396,7 +395,7 @@ namespace NES_Emulator
                     break;
 
                 default:
-                    Console.WriteLine($"Not implemented: {code.ToHex()}");
+                    Console.WriteLine($"Not implemented: {code:X2}");
                     return false;
             }
 
