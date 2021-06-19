@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExtensionMethods;
 
 namespace NES_Emulator
@@ -30,23 +26,26 @@ namespace NES_Emulator
                 case AddressModes.rel:
                     return 0x0000;
                 case AddressModes.abs:
-                    return AM_Absolute();
+                    return (ushort)(MEM[++R.PC] + (MEM[++R.PC] << 8));
                 case AddressModes.absX:
-                    return AM_AbsoluteX();
+                    return (ushort)(MEM[++R.PC] + (MEM[++R.PC] << 8) + R.X);
                 case AddressModes.absY:
-                    return AM_AbsoluteY();                
+                    return (ushort)(MEM[++R.PC] + (MEM[++R.PC] << 8) + R.Y);                
                 case AddressModes.ind:
-                    return AM_Indirect();
+                    ushort adr = (ushort)(MEM[++R.PC] + (MEM[++R.PC] << 8));
+                    return (ushort)((MEM[adr + 1] << 8) + MEM[adr]);
                 case AddressModes.Xind:
-                    return AM_XIndirect();
+                    ushort HHLLx = (ushort)(MEM[++R.PC] + R.X);
+                    return (ushort)((MEM[HHLLx + 1] << 8) + MEM[HHLLx]);
                 case AddressModes.indY:
-                    return AM_IndirectY();                
+                    ushort HHLLy = MEM[++R.PC];
+                    return (ushort)((MEM[HHLLy + 1] << 8) + MEM[HHLLy] + R.Y);
                 case AddressModes.zpg:
-                    return AM_Zeropage();
+                    return MEM[++R.PC];
                 case AddressModes.zpgX:
-                    return AM_ZeropageX();
+                    return (ushort)(MEM[++R.PC] + R.X);
                 case AddressModes.zpgY:
-                    return AM_ZeropageY();
+                    return (ushort)(MEM[++R.PC] + R.Y);
                 default:
                     throw new Exception($"Unknown Address Mode: {am}");
             }
@@ -77,85 +76,17 @@ namespace NES_Emulator
                     throw new Exception($"Unknown Address Mode: {am}");
             }
         }
-
-
-        public byte AM_Load1Byte()
-        {
-            return MEM[++R.PC];            
-        }
-        public ushort AM_Load2Bytes()
-        {
-            return (ushort)(MEM[++R.PC] + (MEM[++R.PC] << 8));
-        }
-
-
-        public ushort AM_Absolute()
-        {
-            return AM_Load2Bytes();
-        }
-        public ushort AM_AbsoluteX() 
-        {
-            ushort HHLL = AM_Load2Bytes();
-            HHLL += R.X;            
-            return HHLL;
-        }
-        public ushort AM_AbsoluteY() 
-        {
-            ushort HHLL = AM_Load2Bytes();
-            HHLL += R.Y;
-            return HHLL;
-        }
-
-        public ushort AM_Indirect()
-        {
-            ushort adr = AM_Load2Bytes();
-            return Convert.ToUInt16((MEM[adr + 1] << 8) + MEM[adr]);
-        }
-        public ushort AM_XIndirect()
-        {            
-            byte LL = (byte)(AM_Load1Byte() + R.X);
-            ushort HHLL = (ushort)(0x0000 + LL);            
-            return Convert.ToUInt16((MEM[HHLL + 1] << 8) + MEM[HHLL]);
-        }
-        public ushort AM_IndirectY()
-        {
-            ushort HHLL = (ushort)(0x0000 + AM_Load1Byte());
-            ushort word = Convert.ToUInt16((MEM[HHLL + 1] << 8) + MEM[HHLL]);
-            word += R.Y;            
-            return word;
-        }
-
-        public ushort AM_Zeropage()
-        {
-            return (ushort)(0x0000 + AM_Load1Byte());
-        }
-
-        public ushort AM_ZeropageX()
-        {
-            byte LL = AM_Load1Byte();
-            LL += R.X;
-            return (ushort)(0x0000 + LL);
-        }
-
-        public ushort AM_ZeropageY()
-        {
-            byte LL = AM_Load1Byte();
-            LL += R.Y;
-            return (ushort)(0x0000 + LL);
-        }
         #endregion
 
         #region Stack
         void PushStack(byte v)
         {
-            MEM[0x0100 + R.SP] = v;
-            R.SP--;
+            MEM[0x0100 + R.SP--] = v;            
         }
 
         byte PopStack()
         {
-            R.SP++;
-            return MEM[0x0100 + R.SP];
+            return MEM[0x0100 + ++R.SP];
         }
         #endregion
 
@@ -168,7 +99,7 @@ namespace NES_Emulator
         private byte Add(byte a, byte b)
         {
             int c = a + b;
-            bool carry = (c > 0xFF);
+            bool carry = c > 0xFF;
 
             // Overflow check
             sbyte a_s = (sbyte)a;
@@ -225,8 +156,6 @@ namespace NES_Emulator
 
             Console.Write($"0x{R.PC.ToHex()} {code.ToHex()}: ");
 
-            if (R.PC == 0xC1D7) return false;
-
             ushort tmpAddr = LoadAddress(opCode.Addressing);
             byte tmpByte = LoadData(opCode.Addressing, tmpAddr);
             sbyte tmpSByte = (sbyte)tmpByte;
@@ -244,7 +173,7 @@ namespace NES_Emulator
                 case 0x79:
                 case 0x61:
                 case 0x71:
-                    R.A = Add(R.A, tmpByte);                    
+                    R.A = Add(R.A, tmpByte);
                     break;
 
                 // AND
@@ -280,7 +209,7 @@ namespace NES_Emulator
 
                 // BNE
                 case 0xD0:
-                    if (!R.SR.Z) R.PC += (ushort)tmpSByte;                                        
+                    if (!R.SR.Z) R.PC += (ushort)tmpSByte;
                     break;
 
                 // BPL
@@ -295,7 +224,7 @@ namespace NES_Emulator
 
                 // CLD
                 case 0xD8:
-                    R.SR.D = false;                    
+                    R.SR.D = false;
                     break;
 
                 // CMP
@@ -306,7 +235,7 @@ namespace NES_Emulator
                 case 0xDD:
                 case 0xD9:
                 case 0xC1:
-                case 0xD1:                    
+                case 0xD1:
                     Compare(R.A, tmpByte);
                     break;
 
@@ -339,7 +268,7 @@ namespace NES_Emulator
                 case 0xE6:
                 case 0xF6:
                 case 0xEE:
-                case 0xFE:                    
+                case 0xFE:
                     SetFlagsNZ(++MEM[tmpAddr]);
                     break;
 
@@ -356,9 +285,9 @@ namespace NES_Emulator
                     return true;
 
                 // JSR
-                case 0x20:                    
+                case 0x20:
                     PushStack((byte)(R.PC >> 8)); // Push high byte
-                    PushStack((byte)R.PC); // Push low byte                    
+                    PushStack((byte)R.PC); // Push low byte
                     R.PC = tmpAddr;
                     return true;
 
@@ -382,7 +311,7 @@ namespace NES_Emulator
                 case 0xAE:
                 case 0xBE:
                     R.X = tmpByte;
-                    SetFlagsNZ(R.X);                    
+                    SetFlagsNZ(R.X);
                     break;
 
                 // LDY
@@ -415,7 +344,7 @@ namespace NES_Emulator
 
                 // SEI
                 case 0x78:
-                    R.SR.I = true;                    
+                    R.SR.I = true;
                     break;
 
                 // STA
@@ -457,7 +386,7 @@ namespace NES_Emulator
 
                 // TXS
                 case 0x9A:
-                    R.SP = R.X;                    
+                    R.SP = R.X;
                     break;
 
                 // TYA
