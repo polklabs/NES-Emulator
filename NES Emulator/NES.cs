@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace NES_Emulator
 {
@@ -30,6 +30,18 @@ namespace NES_Emulator
             }
 
             R.PrintRegisterStates();
+            MemoryDump();
+        }
+
+        public void MemoryDump()
+        {
+            byte[] memoryDump = new byte[0xFFFF];
+            for (int i = 0; i < 0xFFFF; i++)
+            {
+                memoryDump[i] = MEM[i];
+            }
+
+            File.WriteAllBytes("dump.bin", memoryDump);
         }
     }
 }

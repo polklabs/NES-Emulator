@@ -35,7 +35,7 @@ namespace NES_Emulator
             byte[] memoryUnit = getMemoryUnit(address);
             ushort offset = getMemoryOffset(address);
 
-            while (address - offset > memoryUnit.Length)
+            while (address - offset >= memoryUnit.Length)
                 offset += (ushort)memoryUnit.Length;
 
             if (address - offset >= memoryUnit.Length)
@@ -50,7 +50,7 @@ namespace NES_Emulator
             byte[] memoryUnit = getMemoryUnit(address);
             ushort offset = getMemoryOffset(address);
 
-            while (address - offset > memoryUnit.Length)
+            while (address - offset >= memoryUnit.Length)
                 offset += (ushort)memoryUnit.Length;
 
             if (address - offset >= memoryUnit.Length)
