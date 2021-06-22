@@ -169,6 +169,11 @@ namespace NES_Emulator
                 Console.WriteLine("PPU ACCESS!");
             }
 
+            if (tmpAddr >= 0x4000 && tmpAddr <= 0x4017)
+            {
+                Console.WriteLine("APU ACCESS!");
+            }
+
             switch (code)
             {
 
@@ -284,6 +289,19 @@ namespace NES_Emulator
                     SetFlagsNZ(--R.Y);
                     break;
 
+                // EOR
+                case 0x49:
+                case 0x45:
+                case 0x55:
+                case 0x4D:
+                case 0x5D:
+                case 0x59:
+                case 0x41:
+                case 0x51:
+                    R.A ^= tmpByte;
+                    SetFlagsNZ(R.A);
+                    break;
+
                 // INC
                 case 0xE6:
                 case 0xF6:
@@ -343,6 +361,24 @@ namespace NES_Emulator
                     SetFlagsNZ(R.Y);
                     break;
 
+                // LSR
+                case 0x4A:
+                    R.SR.C = R.A % 2 != 0;
+                    R.SR.N = false;
+                    R.A = (byte)(R.A >> 1);
+                    R.SR.Z = R.A == 0;
+                    break;
+                case 0x46:
+                case 0x56:
+                case 0x4E:
+                case 0x5E:
+                    R.SR.C = tmpByte % 2 != 0;
+                    R.SR.N = false;
+                    tmpByte = (byte)(tmpByte >> 1);
+                    R.SR.Z = tmpByte == 0;
+                    MEM[tmpAddr] = tmpByte;
+                    break;
+
                 // ORA
                 case 0x09:
                 case 0x05:
@@ -359,6 +395,30 @@ namespace NES_Emulator
                 // PHA
                 case 0x48:
                     PushStack(R.A);
+                    break;
+
+                // PLA
+                case 0x68:
+                    R.A = PopStack();
+                    SetFlagsNZ(R.A);
+                    break;
+
+                // ROR
+                case 0x6A:
+                    R.SR.C = R.A % 2 != 0;
+                    R.A = (byte)(R.A >> 1);
+                    R.A += (byte)(R.SR.C ? 0x80 : 0);
+                    SetFlagsNZ(R.A);
+                    break;
+                case 0x66:
+                case 0x76:
+                case 0x6E:
+                case 0x7E:
+                    R.SR.C = tmpByte % 2 != 0;
+                    tmpByte = (byte)(tmpByte >> 1);
+                    tmpByte += (byte)(R.SR.C ? 0x80 : 0);
+                    SetFlagsNZ(tmpByte);
+                    MEM[tmpAddr] = tmpByte;
                     break;
 
                 // RTS
@@ -394,6 +454,12 @@ namespace NES_Emulator
                 case 0x94:
                 case 0x8C:
                     MEM[tmpAddr] = R.Y;
+                    break;
+
+                // TAX
+                case 0xAA:
+                    R.X = R.A;
+                    SetFlagsNZ(R.X);
                     break;
 
                 // TAY
