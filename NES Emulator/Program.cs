@@ -12,7 +12,7 @@ namespace NES_Emulator
             List<byte> PRG = new();
             List<byte> CHR = new();
 
-            LoadRom("Super Mario Bros.nes", PRG, CHR);
+            LoadRom("Donkey Kong.nes", PRG, CHR);
 
             NES nes = new NES(PRG, CHR);
             nes.Run();

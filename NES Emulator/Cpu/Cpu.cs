@@ -156,11 +156,19 @@ namespace NES_Emulator
 
             Console.Write($"0x{R.PC:X4} {code:X2}: ");
 
+            if (R.PC == 0xC1D9) return false;
+
             ushort tmpAddr = LoadAddress(opCode.Addressing);
             byte tmpByte = LoadData(opCode.Addressing, tmpAddr);
             sbyte tmpSByte = (sbyte)tmpByte;
-            
+
             Console.WriteLine(string.Format(opCode.Assembler, tmpAddr.ToHex(), tmpByte.ToHex(), tmpSByte));
+
+            if (tmpAddr >= 0x2000 && tmpAddr <= 0x2007)
+            {
+                Console.WriteLine("PPU ACCESS!");
+            }
+
             switch (code)
             {
 
@@ -197,6 +205,11 @@ namespace NES_Emulator
                 // BCS
                 case 0xB0:
                     if (R.SR.C) R.PC += (ushort)tmpSByte;
+                    break;
+
+                // BEQ
+                case 0xF0:
+                    if (R.SR.Z) R.PC += (ushort)tmpSByte;
                     break;
 
                 // BIT
@@ -253,6 +266,13 @@ namespace NES_Emulator
                     Compare(R.Y, tmpByte);
                     break;
 
+                // DEC
+                case 0xC6:
+                case 0xD6:
+                case 0xCE:
+                case 0xDE:
+                    SetFlagsNZ(--MEM[tmpAddr]);
+                    break;
 
                 // DEX
                 case 0xCA:
@@ -334,6 +354,11 @@ namespace NES_Emulator
                 case 0x11:
                     R.A |= tmpByte;
                     SetFlagsNZ(R.A);
+                    break;
+
+                // PHA
+                case 0x48:
+                    PushStack(R.A);
                     break;
 
                 // RTS

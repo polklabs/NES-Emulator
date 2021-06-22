@@ -7,7 +7,9 @@ namespace NES_Emulator
     {
         readonly Memory MEM;
         readonly Registers R;
-        readonly Cpu CPU_6502; 
+        readonly Cpu CPU_6502;
+        readonly GMemory GMEM;
+        readonly Ppu PPU;
 
         public NES(List<byte> prg, List<byte> chr)
         {
@@ -19,6 +21,9 @@ namespace NES_Emulator
             };
 
             CPU_6502 = new Cpu(MEM, R);
+
+            GMEM = new GMemory(chr);
+            PPU = new Ppu(MEM, GMEM);
         }
 
         public void Run()
@@ -26,7 +31,8 @@ namespace NES_Emulator
             while(true)
             {
                 bool opResult = CPU_6502.PerformOp();
-                if (!opResult) break;                
+                if (!opResult) break;
+                PPU.memoryToFlags();
             }
 
             R.PrintRegisterStates();
@@ -42,6 +48,14 @@ namespace NES_Emulator
             }
 
             File.WriteAllBytes("dump.bin", memoryDump);
+
+            byte[] gMemoryDump = new byte[0x3FFF];
+            for (int i = 0; i < 0x3FFF; i++)
+            {
+                gMemoryDump[i] = GMEM[i];
+            }
+
+            File.WriteAllBytes("dumpG.bin", gMemoryDump);
         }
     }
 }

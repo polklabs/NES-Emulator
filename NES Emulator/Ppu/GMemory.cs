@@ -3,19 +3,15 @@ using System.Collections.Generic;
 
 namespace NES_Emulator
 {
-    class Memory
+    class GMemory
     {
-        private readonly byte[] RAM = new byte[0x0800];
-        private readonly byte[] PPU = new byte[0x0008];
-        private readonly byte[] AIO = new byte[0x0018]; // APU & I/O
-        private readonly byte[] AIF = new byte[0x0018]; // APU & I/O testing
-        private readonly byte[] PRA = new byte[0x3FE0]; // Progam RAM
-        private readonly byte[] PRG; // Program
+        private readonly byte[] CHR = new byte[0x2000]; // CHR-RAM
+        private readonly byte[] NTB = new byte[0x1000]; // Nametables
+        private readonly byte[] PRI = new byte[0x0020]; // Palette RAM Indexes
 
-        public Memory(List<byte> prg)
+        public GMemory(List<byte> chr)
         {
-            PRG = prg.ToArray();
-            this[0x2002] = 0x80;
+            chr.ToArray().CopyTo(CHR, 0);
         }
 
         public byte this[ushort address]
@@ -62,23 +58,17 @@ namespace NES_Emulator
 
         private byte[] GetMemoryUnit(ushort address)
         {
-            if (address < 0x2000) return RAM;
-            if (address < 0x4000) return PPU;
-            if (address < 0x4018) return AIO;
-            if (address < 0x4020) return AIF;
-            if (address < 0x8000) return PRA;
-            if (address <= 0xFFFF) return PRG;
+            if (address < 0x2000) return CHR;
+            if (address < 0x3F00) return NTB;
+            if (address <= 0x3FFF) return PRI;
             throw new Exception($"Unknown memory address: {address:X4}");
         }
 
         private static ushort GetMemoryOffset(ushort address)
         {
             if (address < 0x2000) return 0;
-            if (address < 0x4000) return 0x2000;
-            if (address < 0x4018) return 0x4000;
-            if (address < 0x4020) return 0x4018;
-            if (address < 0x8000) return 0x4020;
-            if (address <= 0xFFFF) return 0x8000;
+            if (address < 0x3F00) return 0x2000;
+            if (address <= 0x3FFF) return 0x3F00;
             throw new Exception($"Unknown memory address: {address:X4}");
         }
     }
