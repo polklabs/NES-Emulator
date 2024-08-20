@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
-namespace NES_Emulator
+namespace NES_Application
 {
     class Ppu
     {
+        readonly Form1 FORM;
+        Bitmap img = new Bitmap(250, 250);
+        int x = 0;
+        int y = 0;
+
         readonly Memory MEM;
         readonly GMemory GMEM;
 
@@ -26,15 +28,33 @@ namespace NES_Emulator
         bool m = false; // Background left column enable
         bool G = false; // Greyscale
 
-        public Ppu(Memory mem, GMemory gmem)
+        public Ppu(Memory mem, GMemory gmem, Form1 form)
         {
             MEM = mem;
             GMEM = gmem;
+            FORM = form;
+            form.ppuOutput.Image = img;
         }
 
         public void Run()
         {
+            x += 1;
+            if (x >= 250)
+            {
+                x = 0;
+                y += 1;
+            }
+            if (y >= 250)
+            {
+                y = 0;
+            }
 
+            img.SetPixel(x, y, Color.Red);    
+             
+            FORM.Invoke((MethodInvoker)delegate()
+            {
+                FORM.ppuOutput.Refresh();
+            });
         }
 
         public void memoryToFlags()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExtensionMethods;
+using System;
 using System.Collections.Generic;
 
 namespace NES_Emulator
@@ -308,6 +309,16 @@ namespace NES_Emulator
 
             if (OPCODES.ContainsKey(oc)) throw new Exception($"OpCode ({oc.ToString("X2")}) already defined");
             OPCODES.Add(oc, this);
+        }
+
+        public string ToString(ushort addr, byte value, sbyte shortValue)
+        {
+            return string.Format(Assembler, addr.ToHex(), value.ToHex(), shortValue);
+        }
+
+        public override string ToString()
+        {
+            return Assembler;
         }
     }
 }

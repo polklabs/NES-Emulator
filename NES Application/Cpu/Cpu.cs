@@ -1,7 +1,7 @@
 ﻿using System;
 using ExtensionMethods;
 
-namespace NES_Emulator
+namespace NES_Application
 {
     class Cpu
     {

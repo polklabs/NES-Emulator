@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NES_Emulator
+namespace NES_Application
 {
     class Memory
     {
